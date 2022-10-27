@@ -67,8 +67,21 @@ end
 
 --- @class JestAssertionResult
 M.JestAssertionResult = {
+	name = '',
+	status = '',
+	--- The stringifier for the JestAssertionResult
+	--- @param assertion_result JestAssertionResult
+	--- @return string
 	__tostring = function (assertion_result)
-		return assertion_result.name .. ': ' .. assertion_result.status
+		--- @type string
+		local icon
+		if assertion_result.status == 'passed' then
+			icon = ''
+		else
+			icon = 'X'
+		end
+
+		return icon .. ' ' .. assertion_result.name
 	end
 }
 
