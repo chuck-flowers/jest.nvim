@@ -1,7 +1,9 @@
 local M = {}
 
 --- @class JestOutput
+--- @field test_results JestTestResult[]
 M.JestOutput = {
+	test_results = {},
 	__tostring = function (output)
 		local to_return = ''
 		for _, test_result in ipairs(output.test_results) do
@@ -16,7 +18,7 @@ M.JestOutput = {
 --- @param line string The line of JSON output to parse
 --- @return JestOutput
 function M.JestOutput:new(line)
-	-- Create the instance
+	-- @type JestOutput
 	local instance = {}
 	setmetatable(instance, self)
 
@@ -34,7 +36,11 @@ function M.JestOutput:new(line)
 end
 
 --- @class JestTestResult
+--- @field file_path string
+--- @field assertion_results JestAssertionResult[]
 M.JestTestResult = {
+	file_path = '',
+	assertion_results = {},
 	__tostring = function (test_result)
 		local to_return = test_result.file_path .. '\n'
 
@@ -50,6 +56,7 @@ M.JestTestResult = {
 --- @param raw_table table
 --- @return JestTestResult
 function M.JestTestResult:new(raw_table)
+	--- @type JestTestResult
 	local instance = {}
 
 	setmetatable(instance, self)
@@ -65,20 +72,24 @@ function M.JestTestResult:new(raw_table)
 	return instance
 end
 
---- @class JestAssertionResult
+---@class JestAssertionResult
+---@field name string
+---@field status 'passed' | 'failed'
 M.JestAssertionResult = {
 	name = '',
-	status = '',
-	--- The stringifier for the JestAssertionResult
-	--- @param assertion_result JestAssertionResult
-	--- @return string
+	status = 'failed',
+	---The stringifier for the JestAssertionResult
+	---@param assertion_result JestAssertionResult
+	---@return string
 	__tostring = function (assertion_result)
-		--- @type string
+		---@type '' | 'X'
 		local icon
 		if assertion_result.status == 'passed' then
 			icon = ''
-		else
+		elseif assertion_result.status == 'failed' then
 			icon = 'X'
+		else
+			error('Unrecognized assertion result status' .. assertion_result.status)
 		end
 
 		return icon .. ' ' .. assertion_result.name
@@ -88,7 +99,9 @@ M.JestAssertionResult = {
 --- The constructor for the JestAssertionResult
 --- @param raw_assertion_result table
 function M.JestAssertionResult:new(raw_assertion_result)
+	---@type JestAssertionResult
 	local instance = {}
+
 	setmetatable(instance, self)
 
 	-- Extracts the relevant data

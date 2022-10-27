@@ -4,8 +4,9 @@ local M = {}
 
 local output_bufnr = nil
 
---- Shows jest output within the editor
---- @param jest_output table
+---Shows jest output within the editor
+---@param jest_output JestOutput
+---@return nil
 function M.display_output(jest_output)
 
 	-- Ensure that the incoming param is the correct type
