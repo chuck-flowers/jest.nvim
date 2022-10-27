@@ -1,5 +1,6 @@
 local M = {}
 
+--- @class JestOutput
 M.JestOutput = {
 	__tostring = function (output)
 		local to_return = ''
@@ -11,6 +12,9 @@ M.JestOutput = {
 	end
 }
 
+--- The constructor for a JestOutput
+--- @param line string The line of JSON output to parse
+--- @return JestOutput
 function M.JestOutput:new(line)
 	-- Create the instance
 	local instance = {}
@@ -29,6 +33,7 @@ function M.JestOutput:new(line)
 	return instance
 end
 
+--- @class JestTestResult
 M.JestTestResult = {
 	__tostring = function (test_result)
 		local to_return = test_result.file_path .. '\n'
@@ -41,8 +46,12 @@ M.JestTestResult = {
 	end
 }
 
+--- The constructor for a JestTestResult
+--- @param raw_table table
+--- @return JestTestResult
 function M.JestTestResult:new(raw_table)
 	local instance = {}
+
 	setmetatable(instance, self)
 
 	instance.file_path = raw_table.name
@@ -56,12 +65,15 @@ function M.JestTestResult:new(raw_table)
 	return instance
 end
 
+--- @class JestAssertionResult
 M.JestAssertionResult = {
 	__tostring = function (assertion_result)
 		return assertion_result.name .. ': ' .. assertion_result.status
 	end
 }
 
+--- The constructor for the JestAssertionResult
+--- @param raw_assertion_result table
 function M.JestAssertionResult:new(raw_assertion_result)
 	local instance = {}
 	setmetatable(instance, self)

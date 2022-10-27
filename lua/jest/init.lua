@@ -2,7 +2,7 @@ local M = {}
 
 local default_options = {}
 
-function M:setup(options)
+function M.setup(options)
 	local jest_command = require 'jest.commands.jest'
 
 	options = options or default_options
