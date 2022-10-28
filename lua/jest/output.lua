@@ -19,6 +19,8 @@ function M.display_output(jest_output)
 	if output_bufnr == nil then
 		output_bufnr = vim.api.nvim_create_buf(false, true)
 		vim.cmd('vert sb' .. output_bufnr)
+		vim.wo.number = false
+		vim.wo.relativenumber = false
 	end
 
 	-- Update the content of the buffer
