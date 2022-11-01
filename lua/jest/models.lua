@@ -61,7 +61,7 @@ function M.JestTestResult:new(raw_table)
 
 	setmetatable(instance, self)
 
-	instance.file_path = raw_table.name
+	instance.file_path = string.gsub(raw_table.name, vim.fn.getcwd() .. '/', '.')
 	instance.assertion_results = {}
 
 	for _, raw_assertion_result in ipairs(raw_table.assertionResults) do
