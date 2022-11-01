@@ -1,7 +1,7 @@
 local M = {}
 
 --- @class JestOutput
---- @field test_results JestTestResult[]
+--- @field test_results { [string]: JestTestResult }
 M.JestOutput = {
 	test_results = {},
 	__tostring = function (output)
@@ -29,10 +29,21 @@ function M.JestOutput:new(line)
 	local raw_test_results = parsed_line.testResults
 	for _, raw_test_result in ipairs(raw_test_results) do
 		local test_result = M.JestTestResult:new(raw_test_result)
-		table.insert(instance.test_results, test_result)
+		instance.test_results[test_result.file_path] = test_result
 	end
 
 	return instance
+end
+
+---Merges another JestOutput into this one
+---@param other JestOutput
+function M.JestOutput:merge(other)
+	for key, value in pairs(other) do
+		local jest_test_result = self.test_results[key]
+		if jest_test_result ~= nil then
+			jest_test_result:merge(value)
+		end
+	end
 end
 
 --- @class JestTestResult
@@ -66,10 +77,23 @@ function M.JestTestResult:new(raw_table)
 
 	for _, raw_assertion_result in ipairs(raw_table.assertionResults) do
 		local assertion_result = M.JestAssertionResult:new(raw_assertion_result)
-		table.insert(instance.assertion_results, assertion_result)
+		instance.assertion_results[assertion_result.name] = assertion_result
 	end
 
 	return instance
+end
+
+---Merges another JestTestResult into this one
+---@param other JestTestResult
+function M.JestTestResult:merge(other)
+	for key, value in pairs(other.assertion_results) do
+		local assertion_result = self.assertion_results[key]
+		if assertion_result ~= nil then
+			assertion_result:merge(value)
+		else
+			self.assertion_results[key] = value
+		end
+	end
 end
 
 ---@class JestAssertionResult
@@ -109,6 +133,13 @@ function M.JestAssertionResult:new(raw_assertion_result)
 	instance.status = raw_assertion_result.status
 
 	return instance
+end
+
+---Merges another JestAssertionResult into this one
+---@param other JestAssertionResult
+function M.JestAssertionResult:merge(other)
+	self.name = other.name
+	self.status = other.status
 end
 
 return M
