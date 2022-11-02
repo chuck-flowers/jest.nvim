@@ -1,7 +1,16 @@
-local shell = require 'jest.shell'
+local JestDisplay = require 'jest.output'
+local JestShell = require 'jest.shell'
 
-return function()
-	local output = require 'jest.output'
+---Creates the Jest command handler
+---@param config JestNvimConfig The configuration to use
+---@return fun(): nil
+return function(config)
+	return function()
+		local output = JestDisplay:new(config)
+		local shell = JestShell:new(config)
 
-	shell.run_jest(output.display_output)
+		shell:run_jest(function(o)
+			output:display_output(o)
+		end)
+	end
 end
